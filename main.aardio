@@ -1,0 +1,80 @@
+import fonts.fontAwesome;
+import win.ui;
+import time;
+/*DSG{{*/
+var mainForm = win.form(text="adb控制器";right=800;bottom=500)
+mainForm.add(
+btnExecute1={cls="plus";text="查设备";left=20;top=410;right=100;bottom=440;notify=1;z=2};
+btnExecute2={cls="plus";text="清缓存";left=20;top=460;right=100;bottom=490;otify=1;z=6};
+btnExecute3={cls="plus";text="安装";left=110;top=410;right=190;bottom=440;notify=1;z=4};
+btnExecute4={cls="plus";text="卸载";left=110;top=460;right=190;bottom=490;notify=1;z=1};
+btnExecute5={cls="plus";text="启动";left=200;top=410;right=280;bottom=440;notify=1;z=5};
+btnExecute6={cls="plus";text="关闭";left=200;top=460;right=280;bottom=490;notify=1;z=7};
+editResult={cls="edit";left=10;top=10;right=790;bottom=400;db=1;dl=1;dr=1;dt=1;edge=1;hscroll=1;multiline=1;vscroll=1;z=3}
+
+
+pkgName={cls="edit";left=290;top=410;right=790;bottom=430;align="center";edge=1;z=1}
+
+startAddr={cls="edit";left=290;top=440;right=790;bottom=460;align="center";edge=1;z=1}
+
+
+installAddr={cls="edit";left=290;top=470;right=790;bottom=490;align="center";edge=1;z=1}
+
+)
+/*}}*/
+
+import process.batch;
+mainForm.pkgName.text="com.amplesky.client.cdc";
+mainForm.startAddr.text="/de.blinkt.openvpn.MainActivity";
+mainForm.installAddr.text = "C:\tdyg-project\communication-client\android\apks\test.apk";
+
+
+mainForm.btnExecute1.oncommand = function(id,event){
+	//直接batch命令会提示报病毒，忽略就行（运行.aardio批处理方式不会报）
+	var prcs =process.batch("adb devices -l")
+      printStr(prcs)
+}	
+mainForm.btnExecute2.oncommand = function(id,event){
+	var prcs = process.batch("adb shell pm clear "+ mainForm.pkgName.text)
+      printStr(prcs)
+}
+
+mainForm.btnExecute3.oncommand = function(id,event){
+	var prcs = process.batch("adb install "+mainForm.installAddr.text)
+      printStr(prcs)
+}
+mainForm.btnExecute4.oncommand = function(id,event){
+	var prcs = process.batch("adb uninstall "+mainForm.pkgName.text)
+      printStr(prcs)
+}
+mainForm.btnExecute5.oncommand = function(id,event){
+	var prcs = process.batch("adb shell am start -W "+mainForm.pkgName.text+mainForm.startAddr.text)
+      printStr(prcs)
+}
+mainForm.btnExecute6.oncommand = function(id,event){
+	var prcs = process.batch("adb shell am force-stop "+mainForm.pkgName.text)
+      printStr(prcs)
+}
+
+mainForm.editResult.oncommand = function(id,event){
+
+  
+	
+}
+function printStr(prcs){
+	mainForm.editResult.print(time.now());
+	var ok,out,err,exitcode = prcs.waitOne()
+	mainForm.editResult.print(out,err);
+	prcs.close();
+}
+
+import style;
+mainForm.btnExecute1.skin(style.primaryButton)
+mainForm.btnExecute2.skin(style.primaryButton)
+mainForm.btnExecute3.skin(style.primaryButton)
+mainForm.btnExecute4.skin(style.primaryButton)
+mainForm.btnExecute5.skin(style.primaryButton)
+mainForm.btnExecute6.skin(style.primaryButton)
+
+mainForm.show();
+win.loopMessage();
